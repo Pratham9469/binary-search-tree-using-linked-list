@@ -1,0 +1,155 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for a node in the BST
+typedef struct Node {
+int data;
+struct Node* left;
+struct Node* right;
+} Node;
+
+// Function to create a new node
+Node* createNode(int data) {
+Node* newNode = (Node*)malloc(sizeof(Node));
+newNode->data = data;
+newNode->left = newNode->right = NULL;
+return newNode;
+}
+
+// Function to insert a node in the BST
+Node* insertNode(Node* root, int data) {
+if (root == NULL) {
+return createNode(data);
+}
+
+if (data < root->data) {
+    root->left = insertNode(root->left, data);
+} else if (data > root->data) {
+    root->right = insertNode(root->right, data);
+}
+
+return root;
+}
+
+// Function to perform inorder traversal of BST
+void inorderTraversal(Node* root) {
+if (root == NULL) {
+return;
+}
+
+inorderTraversal(root->left);
+printf("%d ", root->data);
+inorderTraversal(root->right);
+}
+
+// Function to search for a key in the BST
+Node* searchNode(Node* root, int key) {
+if (root == NULL || root->data == key) {
+return root;
+}
+
+if (key < root->data) {
+    return searchNode(root->left, key);
+}
+
+return searchNode(root->right, key);
+}
+
+// Function to find the minimum value node in the BST
+Node* findMinNode(Node* node) {
+Node* current = node;
+
+while (current && current->left != NULL) {
+    current = current->left;
+}
+
+return current;
+}
+
+// Function to delete a node from the BST
+Node* deleteNode(Node* root, int key) {
+if (root == NULL) {
+return root;
+}
+
+if (key < root->data) {
+    root->left = deleteNode(root->left, key);
+} else if (key > root->data) {
+    root->right = deleteNode(root->right, key);
+} else {
+    // Node to be deleted found
+
+    // Case 1: No child or 1 child
+    if (root->left == NULL) {
+        Node* temp = root->right;
+        free(root);
+        return temp;
+    } else if (root->right == NULL) {
+        Node* temp = root->left;
+        free(root);
+        return temp;
+    }
+
+    // Case 2: 2 children
+    Node* temp = findMinNode(root->right);
+    root->data = temp->data;
+    root->right = deleteNode(root->right, temp->data);
+}
+
+return root;
+}
+
+int main() {
+Node* root = NULL;
+int choice, data;
+
+while (1) {
+    printf("1. Insert\n");
+    printf("2. Delete\n");
+    printf("3. Search\n");
+    printf("4. Inorder Traversal\n");
+    printf("5. Exit\n");
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            printf("Enter the data to be inserted: ");
+            scanf("%d", &data);
+            root = insertNode(root, data);
+            break;
+
+        case 2:
+            printf("Enter the data to be deleted: ");
+            scanf("%d", &data);
+            root = deleteNode(root, data);
+            break;
+
+        case 3:
+            printf("Enter the data to be searched: ");
+            scanf("%d", &data);
+            if (searchNode(root, data) != NULL) {
+                printf("Element found in the Binary Search Tree.\n");
+            } else {
+                printf("Element not found in the BST.\n");
+            }
+            break;
+
+        case 4:
+            printf("Inorder Traversal: ");
+            inorderTraversal(root);
+            printf("\n");
+            break;
+
+        case 5:
+            printf("Exiting...\n");
+            exit(0);
+
+        default:
+            printf("Invalid choice! Please enter a valid option.\n");
+    }
+    printf("\n");
+}
+
+return 0;
+}
